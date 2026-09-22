@@ -12636,6 +12636,14 @@ label {
   opacity: 0.8 !important;
 }
 
+/* Project Gallery Slider Styling */
+.swiper_gallery_2 .thumb img {
+  width: 100% !important;
+  height: 320px !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+}
+
 /*---------- Button Section ------------*/
 .btn_group {
   position: relative;

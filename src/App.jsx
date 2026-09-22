@@ -55,12 +55,8 @@ export default function App() {
         gallerySwiper = new window.Swiper('.swiper_gallery_2', {
           slidesPerView: 1,
           centeredSlides: false,
-          speed: 1400,
-          spaceBetween: 30,
-          parallax: true,
-          autoHeight: true,
-          effect: 'slide',
-          slideToClickedSlide: true,
+          speed: 800,
+          spaceBetween: 20,
           loop: true,
           keyboard: { enabled: true },
           navigation: {
@@ -68,7 +64,9 @@ export default function App() {
             prevEl: '.swiper-button-prev',
           },
           breakpoints: {
-            600: { slidesPerView: 2 }
+            640: { slidesPerView: 2, spaceBetween: 20 },
+            992: { slidesPerView: 3, spaceBetween: 24 },
+            1200: { slidesPerView: 3, spaceBetween: 30 }
           }
         });
       } catch (e) {
