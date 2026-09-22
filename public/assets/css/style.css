@@ -23829,8 +23829,7 @@ a {
 }
 
 .header-lower-style1 {
-  display: none;
-  /* Additional styling for the header when hidden */
+  display: block !important;
   background-color: #be9600;
   color: #fff;
   text-align: center;

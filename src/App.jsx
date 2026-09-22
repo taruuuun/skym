@@ -193,16 +193,6 @@ export default function App() {
         }
       }
       
-      // Secondary header (header-lower-style1)
-      const headerLower = document.querySelector('.header-lower-style1');
-      if (headerLower) {
-        if (currentScroll > 60) {
-          headerLower.style.display = 'block';
-        } else {
-          headerLower.style.display = 'none';
-        }
-      }
-      
       lastScroll = currentScroll;
     };
 
