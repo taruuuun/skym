@@ -32,6 +32,9 @@ export default function App() {
           slidesPerView: 1,
           spaceBetween: 20,
           loop: true,
+          preventClicks: false,
+          preventClicksPropagation: false,
+          touchStartPreventDefault: false,
           autoplay: {
             delay: 4500,
             disableOnInteraction: false,
@@ -45,6 +48,28 @@ export default function App() {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
           },
+          on: {
+            click: function (swiper, e) {
+              const target = e.target;
+              const facade = target.closest('.yt-facade') || target.closest('[data-yt]') || target.closest('.team-block');
+              if (facade) {
+                const ytId = facade.getAttribute('data-yt') || facade.querySelector('[data-yt]')?.getAttribute('data-yt');
+                if (ytId) {
+                  // Replace facade element with active playing YouTube iframe inline
+                  const targetFacade = facade.classList.contains('yt-facade') ? facade : facade.querySelector('.yt-facade') || facade;
+                  targetFacade.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" style="width:100%; height:100%; min-height:280px; border:none; border-radius:8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                  
+                  // Also trigger popup modal
+                  const modalEl = document.getElementById('videoPopup');
+                  const iframeEl = document.getElementById('ytvideo');
+                  if (modalEl && iframeEl) {
+                    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+                    modalEl.style.display = 'flex';
+                  }
+                }
+              }
+            }
+          }
         });
       } catch (e) {
         console.warn('Team Swiper init error:', e);
@@ -102,21 +127,39 @@ export default function App() {
 
     // 5. Dynamic Video Popup Handler
     const handleVideoClick = (e) => {
-      const facade = e.target.closest('.yt-facade') || e.target.closest('[data-yt]');
-      const openPopupBtn = e.target.closest('#openPopup') || e.target.closest('.play_btn');
+      const playIcon = e.target.closest('.bi-play-fill') || e.target.closest('.bi-play');
+      const facade = e.target.closest('.yt-facade') || e.target.closest('[data-yt]') || e.target.closest('.team-block') || (playIcon ? playIcon.closest('.swiper-slide, .team-block, .yt-facade') : null);
+      const openPopupBtn = e.target.closest('#openPopup') || e.target.closest('.play_btn') || e.target.closest('.play_btns') || (playIcon ? playIcon.closest('#openPopup, .play_btn') : null);
 
       const modalEl = document.getElementById('videoPopup');
       const iframeEl = document.getElementById('ytvideo');
 
       if (facade) {
-        e.preventDefault();
-        e.stopPropagation();
-        const ytId = facade.getAttribute('data-yt');
-        if (ytId && iframeEl && modalEl) {
-          iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
-          modalEl.style.display = 'flex';
+        const ytId = facade.getAttribute('data-yt') || facade.querySelector('[data-yt]')?.getAttribute('data-yt');
+        if (ytId) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Inline iframe embed for instant playback in testimonial card
+          const targetFacade = facade.classList.contains('yt-facade') ? facade : facade.querySelector('.yt-facade') || facade;
+          if (targetFacade && !targetFacade.querySelector('iframe')) {
+            targetFacade.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" style="width:100%; height:100%; min-height:280px; border:none; border-radius:8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+          }
+
+          // Open popup modal
+          if (iframeEl && modalEl) {
+            iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+            modalEl.style.display = 'flex';
+          }
+        } else if (openPopupBtn || playIcon) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (iframeEl && modalEl) {
+            iframeEl.src = `https://www.youtube.com/embed/EA8l3ULSQIM?autoplay=1`;
+            modalEl.style.display = 'flex';
+          }
         }
-      } else if (openPopupBtn) {
+      } else if (openPopupBtn || playIcon) {
         e.preventDefault();
         e.stopPropagation();
         if (iframeEl && modalEl) {
@@ -193,6 +236,16 @@ export default function App() {
         }
       }
       
+      // Secondary header (header-lower-style1)
+      const headerLower = document.querySelector('.header-lower-style1');
+      if (headerLower) {
+        if (currentScroll > 60) {
+          headerLower.style.display = 'block';
+        } else {
+          headerLower.style.display = 'none';
+        }
+      }
+      
       lastScroll = currentScroll;
     };
 
@@ -203,22 +256,30 @@ export default function App() {
       });
     }
 
-    // 8. Auto On-Load Form Popup after 3.5 seconds
+    window.addEventListener('scroll', handleScroll);
+
+    // 8. Auto-open Lead Form Popup after 3 seconds on website load
     const popupTimer = setTimeout(() => {
-      const popupModal = document.getElementById('cta_onload_popup') || document.getElementById('cta_enquire');
-      if (popupModal) {
+      const modalEl = document.getElementById('cta_onload_popup') || document.getElementById('cta_enquire');
+      if (modalEl) {
         if (window.bootstrap && window.bootstrap.Modal) {
-          const modalInstance = window.bootstrap.Modal.getInstance(popupModal) || new window.bootstrap.Modal(popupModal);
-          modalInstance.show();
+          try {
+            const modalInstance = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+            modalInstance.show();
+          } catch (e) {
+            if (window.jQuery && window.jQuery.fn.modal) {
+              window.jQuery(modalEl).modal('show');
+            }
+          }
         } else if (window.jQuery && window.jQuery.fn.modal) {
-          window.jQuery(popupModal).modal('show');
-        } else {
-          popupModal.classList.add('show');
-          popupModal.style.display = 'block';
-          document.body.classList.add('modal-open');
+          try {
+            window.jQuery(modalEl).modal('show');
+          } catch (e) {
+            console.warn('Modal trigger fallback:', e);
+          }
         }
       }
-    }, 3500);
+    }, 3000);
 
     // Cleanup
     return () => {
