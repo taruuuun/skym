@@ -12590,6 +12590,52 @@ label {
   background-size: cover !important;
 }
 
+/* Video Popup Modal Custom Styling */
+#videoPopup {
+  display: none;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  z-index: 999999 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+}
+
+#videoPopup .modal-content {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 900px !important;
+  height: 500px !important;
+  max-height: 80vh !important;
+  background: #000 !important;
+  border-radius: 12px !important;
+  overflow: visible !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.9) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  margin: auto !important;
+}
+
+#videoPopup .close-btn {
+  position: absolute !important;
+  top: -45px !important;
+  right: 0 !important;
+  font-size: 40px !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  z-index: 1000000 !important;
+  font-weight: 300 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+#videoPopup .close-btn:hover {
+  opacity: 0.8 !important;
+}
+
 /*---------- Button Section ------------*/
 .btn_group {
   position: relative;

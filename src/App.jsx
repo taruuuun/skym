@@ -103,40 +103,46 @@ export default function App() {
     }
 
     // 5. Dynamic Video Popup Handler
-    const videoPopup = document.getElementById('videoPopup');
-    const videoIframe = document.getElementById('ytvideo');
-
     const handleVideoClick = (e) => {
-      const facade = e.target.closest('.yt-facade');
-      const openPopupBtn = e.target.closest('#openPopup');
+      const facade = e.target.closest('.yt-facade') || e.target.closest('[data-yt]');
+      const openPopupBtn = e.target.closest('#openPopup') || e.target.closest('.play_btn');
+
+      const modalEl = document.getElementById('videoPopup');
+      const iframeEl = document.getElementById('ytvideo');
 
       if (facade) {
         e.preventDefault();
+        e.stopPropagation();
         const ytId = facade.getAttribute('data-yt');
-        if (ytId && videoIframe && videoPopup) {
-          videoIframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
-          videoPopup.style.display = 'flex';
+        if (ytId && iframeEl && modalEl) {
+          iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+          modalEl.style.display = 'flex';
         }
       } else if (openPopupBtn) {
         e.preventDefault();
-        if (videoIframe && videoPopup) {
-          // Setting src to the requested YouTube video
-          videoIframe.src = `https://www.youtube.com/embed/EA8l3ULSQIM?autoplay=1`;
-          videoPopup.style.display = 'flex';
+        e.stopPropagation();
+        if (iframeEl && modalEl) {
+          iframeEl.src = `https://www.youtube.com/embed/EA8l3ULSQIM?autoplay=1`;
+          modalEl.style.display = 'flex';
         }
       }
     };
 
     const handleCloseVideo = (e) => {
+      const modalEl = document.getElementById('videoPopup');
+      const iframeEl = document.getElementById('ytvideo');
+
       if (
-        e.target === videoPopup || 
-        e.target.closest('.close') || 
-        e.target.classList.contains('close') ||
-        e.target.closest('.close-btn') || 
-        e.target.classList.contains('close-btn')
+        modalEl && (
+          e.target === modalEl || 
+          e.target.closest('.close') || 
+          e.target.classList.contains('close') ||
+          e.target.closest('.close-btn') || 
+          e.target.classList.contains('close-btn')
+        )
       ) {
-        if (videoIframe) videoIframe.src = '';
-        if (videoPopup) videoPopup.style.display = 'none';
+        if (iframeEl) iframeEl.src = '';
+        if (modalEl) modalEl.style.display = 'none';
       }
     };
 
