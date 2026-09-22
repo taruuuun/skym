@@ -213,10 +213,26 @@ export default function App() {
       });
     }
 
-    window.addEventListener('scroll', handleScroll);
+    // 8. Auto On-Load Form Popup after 3.5 seconds
+    const popupTimer = setTimeout(() => {
+      const popupModal = document.getElementById('cta_onload_popup') || document.getElementById('cta_enquire');
+      if (popupModal) {
+        if (window.bootstrap && window.bootstrap.Modal) {
+          const modalInstance = window.bootstrap.Modal.getInstance(popupModal) || new window.bootstrap.Modal(popupModal);
+          modalInstance.show();
+        } else if (window.jQuery && window.jQuery.fn.modal) {
+          window.jQuery(popupModal).modal('show');
+        } else {
+          popupModal.classList.add('show');
+          popupModal.style.display = 'block';
+          document.body.classList.add('modal-open');
+        }
+      }
+    }, 3500);
 
     // Cleanup
     return () => {
+      clearTimeout(popupTimer);
       try {
         if (heroSwiper && heroSwiper.destroy) heroSwiper.destroy(false, false);
         if (teamSwiper && teamSwiper.destroy) teamSwiper.destroy(false, false);
